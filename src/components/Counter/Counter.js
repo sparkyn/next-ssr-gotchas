@@ -1,27 +1,28 @@
 "use client";
 import React from "react";
 
+import Spinner from "../Spinner";
+
 function Counter() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = React.useState(null);
 
   React.useEffect(() => {
     const savedValue = window.localStorage.getItem("saved-count");
-    // the stored value | null
-    // if it has found no value (null), return early out of the function and don't run setCount
-    if (savedValue === null) {
-      return;
-    }
 
-    setCount(Number(savedValue));
+    // if savedValue has returned a value from localStorage, it will no longer be null. Otherwise use 0.
+    setCount(savedValue ? Number(savedValue) : 0);
   }, []);
 
   React.useEffect(() => {
-    window.localStorage.setItem("saved-count", count);
+    if (typeof count === "number") {
+      // only save the count to localStorage when count changes if it's a number
+      window.localStorage.setItem("saved-count", count);
+    }
   }, [count]);
 
   return (
     <button className="count-btn" onClick={() => setCount(count + 1)}>
-      Count: {count}
+      Count: {typeof count === "number" ? count : <Spinner />}
     </button>
   );
 }
